@@ -1,9 +1,6 @@
 """
 TV e telecomando virtuali con Gradio.
 Spiega passo dopo passo cosa succede quando si accende e si spegne una TV.
-
-Installazione:  pip install gradio
-Avvio:          python tv_telecomando.py
 """
 
 import gradio as gr
@@ -152,8 +149,6 @@ def disegna_tv(stato):
 
 # ----------------------------------------------------------------------------
 # Grafica: telecomando
-# Il corpo e i tasti sono veri componenti Gradio (gr.Button) ricoperti con CSS,
-# così ogni tasto è cliccabile e collegato alla logica Python.
 # ----------------------------------------------------------------------------
 
 CSS_REMOTE = """
@@ -168,7 +163,6 @@ CSS_REMOTE = """
   background:transparent !important; border:none !important; padding:0 !important; box-shadow:none !important; }
 #telecomando .gap, #telecomando .form { background:transparent !important; border:none !important; }
 
-/* finestrella infrarossa */
 .ir-window { width:96px; height:16px; margin:0 auto; border-radius:10px;
   background:linear-gradient(#2a0707,#120202); border:1px solid #000;
   box-shadow: inset 0 1px 3px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.12);
@@ -179,7 +173,6 @@ CSS_REMOTE = """
 @keyframes ir-flash-a { 0%{background:#ff2a2a; box-shadow:0 0 14px 5px #ff2a2a;} 100%{background:#5b1010; box-shadow:none;} }
 @keyframes ir-flash-b { 0%{background:#ff2a2a; box-shadow:0 0 14px 5px #ff2a2a;} 100%{background:#5b1010; box-shadow:none;} }
 
-/* tasti */
 #telecomando button { font-family: Helvetica, Arial, sans-serif !important; padding:0 !important; }
 .rem-btn { background:linear-gradient(#515154,#2e2e30) !important; color:#ececec !important;
   border:1px solid #0b0b0c !important; font-weight:600 !important;
@@ -194,7 +187,6 @@ CSS_REMOTE = """
 .rem-mute { width:110px !important; height:32px !important; min-width:110px !important; flex:none !important;
   border-radius:18px !important; font-size:.8rem !important; }
 
-/* tasti a bilanciere (volume / canale) */
 #telecomando .rocker { width:74px !important; min-width:74px !important; max-width:74px !important; flex:none !important;
   background:linear-gradient(#1b1b1d,#2c2c2f) !important; border:1px solid #000 !important;
   border-radius:38px !important; padding:6px 0 !important; gap:0 !important; align-items:center !important;
@@ -209,7 +201,6 @@ CSS_REMOTE = """
 
 
 def disegna_ir(n):
-    """Il LED infrarosso lampeggia a ogni pressione (le due animazioni alternate la fanno ripartire)."""
     classe = "" if n == 0 else ("ir-a" if n % 2 else "ir-b")
     return '<div class="ir-window"><div class="ir-led %s"></div></div>' % classe
 
@@ -239,7 +230,7 @@ def premi(tasto, stato):
         delta = 1 if tasto == "ch+" else -1
         stato["canale"] = (stato["canale"] + delta) % len(CANALI)
         chiave = "canale"
-    else:  # tasti numerici "1".."4"
+    else:
         stato["canale"] = int(tasto) - 1
         chiave = "canale"
 
@@ -252,7 +243,7 @@ def premi(tasto, stato):
 
 TEMA = gr.themes.Soft(primary_hue="red", neutral_hue="stone")
 
-with gr.Blocks(title="TV e telecomando virtuali", theme=TEMA) as demo:
+with gr.Blocks(title="TV e telecomando virtuali") as demo:
     gr.HTML("<style>" + CSS_REMOTE + "</style>")
     gr.Markdown("# TV e telecomando virtuali\nScopri cosa succede quando accendi e spegni una TV.")
 
@@ -302,4 +293,4 @@ with gr.Blocks(title="TV e telecomando virtuali", theme=TEMA) as demo:
         collega(b, str(i))
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(theme=TEMA)
