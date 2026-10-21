@@ -92,7 +92,7 @@ SPIEGAZIONI = {
 }
 
 # ----------------------------------------------------------------------------
-# Grafica avanzata e Responsive (CSS)
+# Grafica avanzata e Responsive (CSS Layout TV)
 # ----------------------------------------------------------------------------
 
 CSS_LAYOUT = """
@@ -148,8 +148,13 @@ footer { display: none !important; }
 .led-green { background: #22c55e; box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e; }
 .tv-stand { width: 140px; height: 12px; background: linear-gradient(to bottom, #3f3f46, #27272a); border-radius: 0 0 8px 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
 .tv-state { margin-top: 15px; font-size: 1.05rem; color: #e2e8f0; text-align: center; background: rgba(30, 41, 59, 0.5); padding: 8px 16px; border-radius: 8px; width: 100%; max-width: 540px; }
+"""
 
-/* Telecomando moderno con focus speciale sul tasto rosso */
+# ----------------------------------------------------------------------------
+# Grafica Telecomando (CSS_REMOTE)
+# ----------------------------------------------------------------------------
+
+CSS_REMOTE = """
 #telecomando {
   width: 100% !important; max-width: 250px !important; margin: 0 auto;
   background: linear-gradient(165deg, #334155 0%, #1e293b 50%, #0f172a 100%) !important;
@@ -305,12 +310,12 @@ def premi(tasto, stato):
 
 
 # ----------------------------------------------------------------------------
-# Interfaccia Gradio
+# Interfaccia Gradio (Compatibile con Gradio 6.0+)
 # ----------------------------------------------------------------------------
 
 TEMA = gr.themes.Soft(primary_hue="red", neutral_hue="slate")
 
-with gr.Blocks(title="Impara ad usare il telecomando della TV", theme=TEMA) as demo:
+with gr.Blocks(title="Impara ad usare il telecomando della TV") as demo:
     gr.HTML("<style>" + CSS_LAYOUT + CSS_REMOTE + "</style>")
     
     # Intestazione grafica personalizzata
@@ -371,4 +376,4 @@ with gr.Blocks(title="Impara ad usare il telecomando della TV", theme=TEMA) as d
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 7860))
-    demo.launch(server_name="0.0.0.0", server_port=port)
+    demo.launch(theme=TEMA, server_name="0.0.0.0", server_port=port)
