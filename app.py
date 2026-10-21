@@ -1,6 +1,5 @@
 """
-TV e telecomando virtuali con Streamlit.
-Spiega passo dopo passo cosa succede quando si accende e si spegne una TV.
+TV e telecomando virtuali con Streamlit (Grafica telecomando reale).
 """
 
 import streamlit as st
@@ -67,7 +66,7 @@ cambia il livello dell'amplificatore audio e mostra la barra sullo schermo.
     "muto": """
 ### Muto
 
-The tasto MUTE invia un codice che dice al processore di azzerare l'uscita audio
+Il tasto MUTE invia un codice che dice al processore di azzerare l'uscita audio
 senza cambiare il livello del volume. Premendolo di nuovo, l'audio torna
 al volume di prima.
 """,
@@ -88,7 +87,7 @@ ciò che succede dentro la TV a ogni pressione.
 }
 
 # ----------------------------------------------------------------------------
-# Inizializzazione dello Stato (Session State)
+# Inizializzazione dello Stato
 # ----------------------------------------------------------------------------
 if "stato" not in st.session_state:
     st.session_state.stato = {"acceso": False, "volume": 10, "canale": 0, "muto": False, "n": 0}
@@ -97,9 +96,10 @@ if "stato" not in st.session_state:
 s = st.session_state.stato
 
 # ----------------------------------------------------------------------------
-# Grafica CSS (TV + Telecomando)
+# Grafica CSS Avanzata (TV + Vero Telecomando Fisico)
 # ----------------------------------------------------------------------------
-CSS_TV = """
+CSS_COMPLETO = """
+<style>
 .tv-wrap { display:flex; flex-direction:column; align-items:center; font-family: Georgia, serif; margin-bottom: 20px; }
 .tv-body { background:#1c1917; border-radius:18px; padding:18px 18px 10px; width:100%; max-width:520px;
            box-shadow:0 12px 30px rgba(0,0,0,.35); }
@@ -119,20 +119,52 @@ CSS_TV = """
 .led-red { background:#ef4444; box-shadow:0 0 8px #ef4444; }
 .led-green { background:#22c55e; box-shadow:0 0 8px #22c55e; }
 .tv-stand { width:120px; height:14px; background:#292524; border-radius:0 0 10px 10px; margin: 0 auto; }
-.tv-state { margin-top:12px; font-size:1rem; text-align:center; color: #fff; }
+.tv-state { margin-top:12px; font-size:1rem; text-align:center; }
 
-.ir-window { width:96px; height:16px; margin:0 auto 10px auto; border-radius:10px;
-  background:linear-gradient(#2a0707,#120202); border:1px solid #000;
+/* TELECOMANDO STILIZZATO */
+.telecomando-container {
+  width: 230px;
+  margin: 0 auto;
+  background: linear-gradient(165deg, #47474a 0%, #232325 45%, #151517 100%);
+  border: 1px solid #0b0b0c;
+  border-radius: 38px 38px 46px 46px;
+  padding: 16px 14px 20px;
+  box-shadow: 0 18px 34px rgba(0,0,0,.5), inset 0 2px 2px rgba(255,255,255,.14), inset 0 -4px 8px rgba(0,0,0,.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.ir-window {
+  width: 96px; height: 16px; border-radius: 10px;
+  background: linear-gradient(#2a0707, #120202); border: 1px solid #000;
   box-shadow: inset 0 1px 3px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.12);
-  display:flex; align-items:center; justify-content:center; }
-.ir-led { width:60px; height:5px; border-radius:3px; background:#5b1010; }
-.ir-flash { background:#ff2a2a !important; box-shadow:0 0 14px 5px #ff2a2a !important; }
+  display: flex; align-items: center; justify-content: center; margin-bottom: 4px;
+}
+.ir-led { width: 60px; height: 5px; border-radius: 3px; background: #5b1010; }
+.ir-flash { background: #ff2a2a !important; box-shadow: 0 0 14px 5px #ff2a2a !important; }
+
+/* Stile personalizzato per i bottoni Streamlit dentro il telecomando */
+.stButton > button {
+  font-family: Helvetica, Arial, sans-serif !important;
+  background: linear-gradient(#515154, #2e2e30) !important;
+  color: #ececec !important;
+  border: 1px solid #0b0b0c !important;
+  font-weight: 600 !important;
+  box-shadow: 0 3px 0 #0b0b0c, 0 6px 8px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.18) !important;
+  border-radius: 6px;
+}
+.stButton > button:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #0b0b0c, inset 0 1px 0 rgba(255,255,255,.1) !important;
+}
+</style>
 """
 
-st.markdown(f"<style>{CSS_TV}</style>", unsafe_allow_html=True)
+st.markdown(CSS_COMPLETO, unsafe_allow_html=True)
 
 # ----------------------------------------------------------------------------
-# Funzioni di rendering visivo
+# Funzioni grafiche TV
 # ----------------------------------------------------------------------------
 def disegna_tv():
     if s["acceso"]:
@@ -163,9 +195,6 @@ def disegna_tv():
         f'<div class="tv-state">{testo}</div></div>'
     )
 
-# ----------------------------------------------------------------------------
-# Logica di aggiornamento stato al click
-# ----------------------------------------------------------------------------
 def gestisci_input(tasto):
     s["n"] += 1
     if tasto == "power":
@@ -185,12 +214,12 @@ def gestisci_input(tasto):
         delta = 1 if tasto == "ch+" else -1
         s["canale"] = (s["canale"] + delta) % len(CANALI)
         st.session_state.ultimo_evento = "canale"
-    else:  # Numeri 1..4
+    else:
         s["canale"] = int(tasto) - 1
         st.session_state.ultimo_evento = "canale"
 
 # ----------------------------------------------------------------------------
-# Interfaccia Grafica Streamlit
+# Layout Pagina
 # ----------------------------------------------------------------------------
 st.title("TV e telecomando virtuali")
 st.markdown("Scopri cosa succede quando accendi e spegni una TV.")
@@ -201,45 +230,45 @@ with col_tv:
     st.markdown(disegna_tv(), unsafe_allow_html=True)
 
 with col_tel:
-    # Finestrella infrarossa dinamica
+    # Contenitore estetico del telecomando
     flash_class = "ir-flash" if s["n"] > 0 and s["n"] % 2 == 1 else ""
-    st.markdown(f'<div class="ir-window"><div class="ir-led {flash_class}"></div></div>', unsafe_allow_html=True)
     
-    # Pulsante Power
-    if st.button("⏻ POWER", use_container_width=True):
+    st.markdown(f"""
+    <div class="telecomando-container">
+        <div class="ir-window"><div class="ir-led {flash_class}"></div></div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Pulsanti posizionati dentro la struttura del telecomando tramite Streamlit
+    if st.button("⏻", use_container_width=True, key="b_power"):
         gestisci_input("power")
         st.rerun()
 
-    # Tasti Numerici
     c1, c2, c3, c4 = st.columns(4)
-    with c1:
-        if st.button("1", use_container_width=True): gestisci_input("1"); st.rerun()
-    with c2:
-        if st.button("2", use_container_width=True): gestisci_input("2"); st.rerun()
-    with c3:
-        if st.button("3", use_container_width=True): gestisci_input("3"); st.rerun()
-    with c4:
-        if st.button("4", use_container_width=True): gestisci_input("4"); st.rerun()
+    with c1: 
+        if st.button("1", key="b1"): gestisci_input("1"); st.rerun()
+    with c2: 
+        if st.button("2", key="b2"): gestisci_input("2"); st.rerun()
+    with c3: 
+        if st.button("3", key="b3"): gestisci_input("3"); st.rerun()
+    with c4: 
+        if st.button("4", key="b4"): gestisci_input("4"); st.rerun()
 
-    # Tasto Mute
-    if st.button("MUTE", use_container_width=True):
+    if st.button("MUTE", use_container_width=True, key="b_mute"):
         gestisci_input("mute")
         st.rerun()
 
-    # Bilancieri Volume e Canale
     col_vol, col_ch = st.columns(2)
     with col_vol:
-        st.markdown("<p style='text-align:center; font-weight:bold; margin-bottom:0;'>VOL</p>", unsafe_allow_html=True)
-        if st.button("+", use_container_width=True): gestisci_input("vol+"); st.rerun()
-        if st.button("−", use_container_width=True): gestisci_input("vol-"); st.rerun()
+        st.markdown("<p style='text-align:center; color:#c9c9cc; font-size:0.78rem; font-weight:bold; margin:2px;'>VOL</p>", unsafe_allow_html=True)
+        if st.button("+", use_container_width=True, key="b_vol_su"): gestisci_input("vol+"); st.rerun()
+        if st.button("−", use_container_width=True, key="b_vol_giu"): gestisci_input("vol-"); st.rerun()
     with col_ch:
-        st.markdown("<p style='text-align:center; font-weight:bold; margin-bottom:0;'>CH</p>", unsafe_allow_html=True)
-        if st.button("▲", use_container_width=True): gestisci_input("ch+"); st.rerun()
-        if st.button("▼", use_container_width=True): gestisci_input("ch-"); st.rerun()
+        st.markdown("<p style='text-align:center; color:#c9c9cc; font-size:0.78rem; font-weight:bold; margin:2px;'>CH</p>", unsafe_allow_html=True)
+        if st.button("▲", use_container_width=True, key="b_ch_su"): gestisci_input("ch+"); st.rerun()
+        if st.button("▼", use_container_width=True, key="b_ch_giu"): gestisci_input("ch-"); st.rerun()
         
-    st.markdown("<p style='text-align:center; color:#8b8b90; font-size:0.8rem; margin-top:10px;'>Telecomando TV</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#8b8b90; font-size:0.72rem; margin-top:5px;'>Telecomando TV</p>", unsafe_allow_html=True)
 
-# Sezione Spiegazioni in basso
 st.markdown("---")
-evento_corrente = st.session_state.ultimo_evento
-st.markdown(SPIEGAZIONI[evento_corrente])
+st.markdown(SPIEGAZIONI[st.session_state.ultimo_evento])
