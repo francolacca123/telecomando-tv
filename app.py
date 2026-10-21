@@ -1,6 +1,6 @@
 """
 TV e telecomando virtuali con Gradio.
-Spiega passo dopo passo cosa succede quando si accende e si spegne una TV.
+Fatto Da Francesco Lauriola
 
 Installazione:  pip install gradio
 Avvio:          python app.py
@@ -91,10 +91,34 @@ ciò che succede dentro la TV a ogni pressione.
 }
 
 # ----------------------------------------------------------------------------
-# Grafica: TV
+# Grafica: TV e Rimozione elementi di default Gradio
 # ----------------------------------------------------------------------------
 
-CSS_TV = """
+CSS_LAYOUT = """
+/* Nasconde il footer predefinito di Gradio e gli elementi di sistema */
+footer { display: none !important; }
+#gradio-app { background-color: transparent !important; }
+.gradio-container { max-width: 900px !important; margin: 0 auto !important; }
+.meta-text { display: none !important; }
+
+/* Intestazione personalizzata */
+.custom-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+.custom-header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+.custom-header h2 {
+    font-size: 1.6rem;
+    color: #ef4444;
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+/* Stili TV */
 .tv-wrap { display:flex; flex-direction:column; align-items:center; font-family: Georgia, serif; }
 .tv-body { background:#1c1917; border-radius:18px; padding:18px 18px 10px; width:100%; max-width:520px;
            box-shadow:0 12px 30px rgba(0,0,0,.35); }
@@ -141,7 +165,7 @@ def disegna_tv(stato):
         testo = "La TV è in <b>standby</b>: lo schermo è nero, ma il LED rosso è ancora acceso."
 
     return (
-        "<style>" + CSS_TV + "</style>"
+        "<style>" + CSS_LAYOUT + "</style>"
         '<div class="tv-wrap"><div class="tv-body">'
         + schermo
         + '<div class="tv-footer"><span>' + led + "</span><span>Sensore IR</span></div>"
@@ -250,9 +274,16 @@ def premi(tasto, stato):
 
 TEMA = gr.themes.Soft(primary_hue="red", neutral_hue="stone")
 
-with gr.Blocks(title="TV e telecomando virtuali", theme=TEMA) as demo:
-    gr.HTML("<style>" + CSS_REMOTE + "</style>")
-    gr.Markdown("# TV e telecomando virtuali\nScopri cosa succede quando accendi e spegni una TV.")
+with gr.Blocks(title="Impara ad usare il telecomando della TV", theme=TEMA) as demo:
+    gr.HTML("<style>" + CSS_LAYOUT + CSS_REMOTE + "</style>")
+    
+    # Intestazione Personalizzata
+    gr.HTML("""
+        <div class="custom-header">
+            <h1>Impara ad usare il telecomando della TV e come accenderlo</h1>
+            <h2>Fatto Da Francesco Lauriola</h2>
+        </div>
+    """)
 
     stato = gr.State(dict(STATO_INIZIALE))
 
