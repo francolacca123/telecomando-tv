@@ -1,11 +1,13 @@
 """
-TV e telecomando virtuali con Streamlit (Grafica telecomando reale).
+TV e telecomando virtuali con Gradio.
+Spiega passo dopo passo cosa succede quando si accende e si spegne una TV.
+
+Installazione:  pip install gradio
+Avvio:          python app.py
 """
 
-import streamlit as st
-
-# Configurazione della pagina Streamlit
-st.set_page_config(page_title="TV e telecomando virtuali", layout="centered")
+import os
+import gradio as gr
 
 # ----------------------------------------------------------------------------
 # Dati del programma
@@ -17,6 +19,8 @@ CANALI = [
     ("Notizie", "#2d3748", "#718096"),
     ("Documentari", "#276749", "#9ae6b4"),
 ]
+
+STATO_INIZIALE = {"acceso": False, "volume": 10, "canale": 0, "muto": False, "n": 0}
 
 SPIEGAZIONI = {
     "accendi": """
@@ -87,20 +91,11 @@ ciò che succede dentro la TV a ogni pressione.
 }
 
 # ----------------------------------------------------------------------------
-# Inizializzazione dello Stato
+# Grafica: TV
 # ----------------------------------------------------------------------------
-if "stato" not in st.session_state:
-    st.session_state.stato = {"acceso": False, "volume": 10, "canale": 0, "muto": False, "n": 0}
-    st.session_state.ultimo_evento = "inizio"
 
-s = st.session_state.stato
-
-# ----------------------------------------------------------------------------
-# Grafica CSS Avanzata (TV + Vero Telecomando Fisico)
-# ----------------------------------------------------------------------------
-CSS_COMPLETO = """
-<style>
-.tv-wrap { display:flex; flex-direction:column; align-items:center; font-family: Georgia, serif; margin-bottom: 20px; }
+CSS_TV = """
+.tv-wrap { display:flex; flex-direction:column; align-items:center; font-family: Georgia, serif; }
 .tv-body { background:#1c1917; border-radius:18px; padding:18px 18px 10px; width:100%; max-width:520px;
            box-shadow:0 12px 30px rgba(0,0,0,.35); }
 .tv-screen { position:relative; height:290px; border-radius:6px; overflow:hidden;
@@ -118,69 +113,26 @@ CSS_COMPLETO = """
 .led { display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:8px; vertical-align:middle; }
 .led-red { background:#ef4444; box-shadow:0 0 8px #ef4444; }
 .led-green { background:#22c55e; box-shadow:0 0 8px #22c55e; }
-.tv-stand { width:120px; height:14px; background:#292524; border-radius:0 0 10px 10px; margin: 0 auto; }
-.tv-state { margin-top:12px; font-size:1rem; text-align:center; }
-
-/* TELECOMANDO STILIZZATO */
-.telecomando-container {
-  width: 230px;
-  margin: 0 auto;
-  background: linear-gradient(165deg, #47474a 0%, #232325 45%, #151517 100%);
-  border: 1px solid #0b0b0c;
-  border-radius: 38px 38px 46px 46px;
-  padding: 16px 14px 20px;
-  box-shadow: 0 18px 34px rgba(0,0,0,.5), inset 0 2px 2px rgba(255,255,255,.14), inset 0 -4px 8px rgba(0,0,0,.5);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-.ir-window {
-  width: 96px; height: 16px; border-radius: 10px;
-  background: linear-gradient(#2a0707, #120202); border: 1px solid #000;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.12);
-  display: flex; align-items: center; justify-content: center; margin-bottom: 4px;
-}
-.ir-led { width: 60px; height: 5px; border-radius: 3px; background: #5b1010; }
-.ir-flash { background: #ff2a2a !important; box-shadow: 0 0 14px 5px #ff2a2a !important; }
-
-/* Stile personalizzato per i bottoni Streamlit dentro il telecomando */
-.stButton > button {
-  font-family: Helvetica, Arial, sans-serif !important;
-  background: linear-gradient(#515154, #2e2e30) !important;
-  color: #ececec !important;
-  border: 1px solid #0b0b0c !important;
-  font-weight: 600 !important;
-  box-shadow: 0 3px 0 #0b0b0c, 0 6px 8px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.18) !important;
-  border-radius: 6px;
-}
-.stButton > button:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 #0b0b0c, inset 0 1px 0 rgba(255,255,255,.1) !important;
-}
-</style>
+.tv-stand { width:120px; height:14px; background:#292524; border-radius:0 0 10px 10px; }
+.tv-state { margin-top:12px; font-size:1rem; }
 """
 
-st.markdown(CSS_COMPLETO, unsafe_allow_html=True)
 
-# ----------------------------------------------------------------------------
-# Funzioni grafiche TV
-# ----------------------------------------------------------------------------
-def disegna_tv():
-    if s["acceso"]:
-        nome, c1, c2 = CANALI[s["canale"]]
-        if s["muto"]:
+def disegna_tv(stato):
+    if stato["acceso"]:
+        nome, c1, c2 = CANALI[stato["canale"]]
+        if stato["muto"]:
             osd = '<div class="tv-osd">Audio disattivato (muto)</div>'
         else:
             osd = (
                 '<div class="tv-osd">Vol <div class="tv-bar"><span style="width:%d%%"></span></div> %d</div>'
-                % (s["volume"] * 5, s["volume"])
+                % (stato["volume"] * 5, stato["volume"])
             )
         schermo = (
             '<div class="tv-screen" style="background:linear-gradient(135deg,%s,%s)">'
             '<div><div class="tv-title">%s</div><div class="tv-sub">Canale %d</div></div>'
             '<div class="tv-ch">%d</div>%s</div>'
-        ) % (c1, c2, nome, s["canale"] + 1, s["canale"] + 1, osd)
+        ) % (c1, c2, nome, stato["canale"] + 1, stato["canale"] + 1, osd)
         led = '<span class="led led-green"></span>Acceso'
         testo = "La TV è <b>accesa</b>."
     else:
@@ -189,86 +141,164 @@ def disegna_tv():
         testo = "La TV è in <b>standby</b>: lo schermo è nero, ma il LED rosso è ancora acceso."
 
     return (
-        f'<div class="tv-wrap"><div class="tv-body">{schermo}'
-        f'<div class="tv-footer"><span>{led}</span><span>Sensore IR</span></div>'
-        f'</div><div class="tv-stand"></div>'
-        f'<div class="tv-state">{testo}</div></div>'
+        "<style>" + CSS_TV + "</style>"
+        '<div class="tv-wrap"><div class="tv-body">'
+        + schermo
+        + '<div class="tv-footer"><span>' + led + "</span><span>Sensore IR</span></div>"
+        "</div>"
+        '<div class="tv-stand"></div>'
+        '<div class="tv-state">' + testo + "</div></div>"
     )
 
-def gestisci_input(tasto):
-    s["n"] += 1
+
+# ----------------------------------------------------------------------------
+# Grafica: telecomando
+# ----------------------------------------------------------------------------
+
+CSS_REMOTE = """
+#telecomando {
+  width:230px !important; max-width:230px !important; min-width:230px !important; flex:none !important;
+  background:linear-gradient(165deg,#47474a 0%,#232325 45%,#151517 100%) !important;
+  border:1px solid #0b0b0c !important; border-radius:38px 38px 46px 46px !important;
+  padding:16px 14px 20px !important; gap:14px !important; align-items:center !important;
+  box-shadow:0 18px 34px rgba(0,0,0,.5), inset 0 2px 2px rgba(255,255,255,.14), inset 0 -4px 8px rgba(0,0,0,.5) !important;
+}
+#telecomando .rem-row { justify-content:center !important; gap:10px !important; flex-wrap:nowrap !important;
+  background:transparent !important; border:none !important; padding:0 !important; box-shadow:none !important; }
+#telecomando .gap, #telecomando .form { background:transparent !important; border:none !important; }
+
+/* finestrella infrarossa */
+.ir-window { width:96px; height:16px; margin:0 auto; border-radius:10px;
+  background:linear-gradient(#2a0707,#120202); border:1px solid #000;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.12);
+  display:flex; align-items:center; justify-content:center; }
+.ir-led { width:60px; height:5px; border-radius:3px; background:#5b1010; }
+.ir-a { animation: ir-flash-a .5s ease-out; }
+.ir-b { animation: ir-flash-b .5s ease-out; }
+@keyframes ir-flash-a { 0%{background:#ff2a2a; box-shadow:0 0 14px 5px #ff2a2a;} 100%{background:#5b1010; box-shadow:none;} }
+@keyframes ir-flash-b { 0%{background:#ff2a2a; box-shadow:0 0 14px 5px #ff2a2a;} 100%{background:#5b1010; box-shadow:none;} }
+
+/* tasti */
+#telecomando button { font-family: Helvetica, Arial, sans-serif !important; padding:0 !important; }
+.rem-btn { background:linear-gradient(#515154,#2e2e30) !important; color:#ececec !important;
+  border:1px solid #0b0b0c !important; font-weight:600 !important;
+  box-shadow:0 3px 0 #0b0b0c, 0 6px 8px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.18) !important; }
+.rem-btn:active { transform:translateY(2px); box-shadow:0 1px 0 #0b0b0c, inset 0 1px 0 rgba(255,255,255,.1) !important; }
+
+.rem-power { width:58px !important; height:58px !important; min-width:58px !important; flex:none !important;
+  border-radius:50% !important; font-size:1.5rem !important;
+  background:radial-gradient(circle at 35% 28%,#ff7a6e,#c1121f 70%) !important; color:#fff !important; }
+.rem-num { width:40px !important; height:40px !important; min-width:40px !important; flex:none !important;
+  border-radius:50% !important; font-size:1rem !important; }
+.rem-mute { width:110px !important; height:32px !important; min-width:110px !important; flex:none !important;
+  border-radius:18px !important; font-size:.8rem !important; }
+
+/* tasti a bilanciere (volume / canale) */
+#telecomando .rocker { width:74px !important; min-width:74px !important; max-width:74px !important; flex:none !important;
+  background:linear-gradient(#1b1b1d,#2c2c2f) !important; border:1px solid #000 !important;
+  border-radius:38px !important; padding:6px 0 !important; gap:0 !important; align-items:center !important;
+  box-shadow:inset 0 3px 8px rgba(0,0,0,.75), 0 1px 0 rgba(255,255,255,.1) !important; }
+.rem-key { width:56px !important; height:54px !important; min-width:56px !important; flex:none !important;
+  border-radius:28px !important; font-size:1.7rem !important; line-height:1 !important; }
+.rlabel { text-align:center; color:#c9c9cc; font-family:Helvetica,Arial,sans-serif; font-size:.78rem;
+  font-weight:700; padding:0 !important; min-height:0 !important; margin:4px 0; }
+.rem-brand { text-align:center; color:#8b8b90; font-family:Helvetica,Arial,sans-serif; font-size:.72rem;
+  padding:0 !important; min-height:0 !important; }
+"""
+
+
+def disegna_ir(n):
+    classe = "" if n == 0 else ("ir-a" if n % 2 else "ir-b")
+    return '<div class="ir-window"><div class="ir-led %s"></div></div>' % classe
+
+
+# ----------------------------------------------------------------------------
+# Logica dei comandi
+# ----------------------------------------------------------------------------
+
+def premi(tasto, stato):
+    stato = dict(stato)
+    stato["n"] += 1
+
     if tasto == "power":
-        s["acceso"] = not s["acceso"]
-        st.session_state.ultimo_evento = "accendi" if s["acceso"] else "spegni"
-    elif not s["acceso"]:
-        st.session_state.ultimo_evento = "ignorato"
+        stato["acceso"] = not stato["acceso"]
+        chiave = "accendi" if stato["acceso"] else "spegni"
+    elif not stato["acceso"]:
+        chiave = "ignorato"
     elif tasto in ("vol+", "vol-"):
         delta = 1 if tasto == "vol+" else -1
-        s["volume"] = max(0, min(20, s["volume"] + delta))
-        s["muto"] = False
-        st.session_state.ultimo_evento = "volume"
+        stato["volume"] = max(0, min(20, stato["volume"] + delta))
+        stato["muto"] = False
+        chiave = "volume"
     elif tasto == "mute":
-        s["muto"] = not s["muto"]
-        st.session_state.ultimo_evento = "muto"
+        stato["muto"] = not stato["muto"]
+        chiave = "muto"
     elif tasto in ("ch+", "ch-"):
         delta = 1 if tasto == "ch+" else -1
-        s["canale"] = (s["canale"] + delta) % len(CANALI)
-        st.session_state.ultimo_evento = "canale"
-    else:
-        s["canale"] = int(tasto) - 1
-        st.session_state.ultimo_evento = "canale"
+        stato["canale"] = (stato["canale"] + delta) % len(CANALI)
+        chiave = "canale"
+    else:  # tasti numerici "1".."4"
+        stato["canale"] = int(tasto) - 1
+        chiave = "canale"
+
+    return stato, disegna_tv(stato), SPIEGAZIONI[chiave], disegna_ir(stato["n"])
+
 
 # ----------------------------------------------------------------------------
-# Layout Pagina
+# Interfaccia Gradio
 # ----------------------------------------------------------------------------
-st.title("TV e telecomando virtuali")
-st.markdown("Scopri cosa succede quando accendi e spegni una TV.")
 
-col_tv, col_tel = st.columns([3, 2])
+TEMA = gr.themes.Soft(primary_hue="red", neutral_hue="stone")
 
-with col_tv:
-    st.markdown(disegna_tv(), unsafe_allow_html=True)
+with gr.Blocks(title="TV e telecomando virtuali", theme=TEMA) as demo:
+    gr.HTML("<style>" + CSS_REMOTE + "</style>")
+    gr.Markdown("# TV e telecomando virtuali\nScopri cosa succede quando accendi e spegni una TV.")
 
-with col_tel:
-    # Contenitore estetico del telecomando
-    flash_class = "ir-flash" if s["n"] > 0 and s["n"] % 2 == 1 else ""
-    
-    st.markdown(f"""
-    <div class="telecomando-container">
-        <div class="ir-window"><div class="ir-led {flash_class}"></div></div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Pulsanti posizionati dentro la struttura del telecomando tramite Streamlit
-    if st.button("⏻", use_container_width=True, key="b_power"):
-        gestisci_input("power")
-        st.rerun()
+    stato = gr.State(dict(STATO_INIZIALE))
 
-    c1, c2, c3, c4 = st.columns(4)
-    with c1: 
-        if st.button("1", key="b1"): gestisci_input("1"); st.rerun()
-    with c2: 
-        if st.button("2", key="b2"): gestisci_input("2"); st.rerun()
-    with c3: 
-        if st.button("3", key="b3"): gestisci_input("3"); st.rerun()
-    with c4: 
-        if st.button("4", key="b4"): gestisci_input("4"); st.rerun()
+    with gr.Row():
+        with gr.Column(scale=3):
+            tv = gr.HTML(disegna_tv(STATO_INIZIALE))
 
-    if st.button("MUTE", use_container_width=True, key="b_mute"):
-        gestisci_input("mute")
-        st.rerun()
+        with gr.Column(scale=0, min_width=240):
+            with gr.Column(elem_id="telecomando"):
+                ir = gr.HTML(disegna_ir(0))
 
-    col_vol, col_ch = st.columns(2)
-    with col_vol:
-        st.markdown("<p style='text-align:center; color:#c9c9cc; font-size:0.78rem; font-weight:bold; margin:2px;'>VOL</p>", unsafe_allow_html=True)
-        if st.button("+", use_container_width=True, key="b_vol_su"): gestisci_input("vol+"); st.rerun()
-        if st.button("−", use_container_width=True, key="b_vol_giu"): gestisci_input("vol-"); st.rerun()
-    with col_ch:
-        st.markdown("<p style='text-align:center; color:#c9c9cc; font-size:0.78rem; font-weight:bold; margin:2px;'>CH</p>", unsafe_allow_html=True)
-        if st.button("▲", use_container_width=True, key="b_ch_su"): gestisci_input("ch+"); st.rerun()
-        if st.button("▼", use_container_width=True, key="b_ch_giu"): gestisci_input("ch-"); st.rerun()
-        
-    st.markdown("<p style='text-align:center; color:#8b8b90; font-size:0.72rem; margin-top:5px;'>Telecomando TV</p>", unsafe_allow_html=True)
+                b_power = gr.Button("⏻", elem_classes=["rem-btn", "rem-power"])
 
-st.markdown("---")
-st.markdown(SPIEGAZIONI[st.session_state.ultimo_evento])
+                with gr.Row(elem_classes=["rem-row"]):
+                    b_n = [gr.Button(str(i), elem_classes=["rem-btn", "rem-num"]) for i in (1, 2, 3, 4)]
+
+                b_mute = gr.Button("MUTE", elem_classes=["rem-btn", "rem-mute"])
+
+                with gr.Row(elem_classes=["rem-row"]):
+                    with gr.Column(elem_classes=["rocker"], min_width=74):
+                        b_vol_su = gr.Button("+", elem_classes=["rem-btn", "rem-key"])
+                        gr.HTML("<div class='rlabel'>VOL</div>")
+                        b_vol_giu = gr.Button("−", elem_classes=["rem-btn", "rem-key"])
+                    with gr.Column(elem_classes=["rocker"], min_width=74):
+                        b_ch_su = gr.Button("▲", elem_classes=["rem-btn", "rem-key"])
+                        gr.HTML("<div class='rlabel'>CH</div>")
+                        b_ch_giu = gr.Button("▼", elem_classes=["rem-btn", "rem-key"])
+
+                gr.HTML("<div class='rem-brand'>Telecomando TV</div>")
+
+    spiegazione = gr.Markdown(SPIEGAZIONI["inizio"])
+
+    uscite = [stato, tv, spiegazione, ir]
+
+    def collega(bottone, codice):
+        bottone.click(lambda s: premi(codice, s), stato, uscite)
+
+    collega(b_power, "power")
+    collega(b_mute, "mute")
+    collega(b_vol_su, "vol+")
+    collega(b_vol_giu, "vol-")
+    collega(b_ch_su, "ch+")
+    collega(b_ch_giu, "ch-")
+    for i, b in enumerate(b_n, start=1):
+        collega(b, str(i))
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 7860))
+    demo.launch(server_name="0.0.0.0", server_port=port)
