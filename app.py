@@ -24,121 +24,213 @@ STATO_INIZIALE = {"acceso": False, "volume": 10, "canale": 0, "muto": False, "n"
 
 SPIEGAZIONI = {
     "accendi": """
-### Accensione: cosa succede
-
-1. **Premi POWER sul telecomando.** Il tasto chiude un contatto e il microchip
-   interno prepara un codice binario che corrisponde al comando "accendi".
-2. **Il telecomando lo invia come lampi di luce infrarossa.** Il LED in cima
-   lampeggia molto velocemente. A occhio nudo non si vede, ma una fotocamera
-   del telefono lo mostra.
-3. **La TV era in standby.** Non era davvero spenta: il LED rosso indica che
-   il sensore infrarosso e un piccolo circuito restano alimentati, in attesa.
-4. **Il sensore riceve i lampi e il processore li decodifica.** Se il codice
-   è quello giusto, il processore capisce che deve accendersi.
-5. **L'alimentatore manda corrente a tutto il resto:** schermo, retroilluminazione,
-   audio e sintonizzatore.
-6. **Compare l'immagine.** Il LED diventa verde e la TV mostra l'ultimo canale.
+<div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.05)); border-left: 5px solid #22c55e; padding: 15px; border-radius: 8px;">
+    <h3 style="color: #22c55e; margin-top: 0;">⚡ Accensione: Cosa succede dentro la TV</h3>
+    <ol style="margin-bottom: 0; line-height: 1.6;">
+        <li><b>Premi il Tasto Rosso POWER:</b> Il tasto chiude un contatto e il microchip interno genera un codice binario specifico.</li>
+        <li><b>Lampi Infrarossi:</b> Il LED in cima al telecomando emette lampi di luce invisibile all'occhio umano (visibili però con la fotocamera dello smartphone!).</li>
+        <li><b>Il ruolo dello Standby:</b> La TV non era spenta del tutto; il sensore e un piccolo circuito ricevente erano già alimentati in attesa del comando.</li>
+        <li><b>Elaborazione:</b> Il sensore cattura i lampi, il processore li decodifica e riconosce che deve avviarsi.</li>
+        <li><b>Attivazione generale:</b> L'alimentatore distribuisce corrente a schermo, retroilluminazione e audio.</li>
+        <li><b>Risultato:</b> Il LED diventa verde e compare l'immagine dell'ultimo canale!</li>
+    </ol>
+</div>
 """,
     "spegni": """
-### Spegnimento: cosa succede
-
-1. **Premi di nuovo POWER.** Il telecomando invia lo stesso tipo di segnale
-   infrarosso, ma il codice vuol dire "vai in standby".
-2. **Il processore della TV decodifica il comando** e avvia lo spegnimento.
-3. **Schermo, retroilluminazione e audio vengono disattivati.** L'immagine sparisce.
-4. **La TV non si scollega dalla rete elettrica.** Resta in standby con un consumo
-   minimo, per poter ascoltare il prossimo comando.
-5. **Il LED torna rosso:** la TV non è accesa, ma è pronta a riaccendersi.
-6. **Per spegnerla del tutto** bisogna staccare la spina o usare l'interruttore
-   fisico, se presente.
+<div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05)); border-left: 5px solid #ef4444; padding: 15px; border-radius: 8px;">
+    <h3 style="color: #ef4444; margin-top: 0;">🛑 Spegnimento in Standby</h3>
+    <ol style="margin-bottom: 0; line-height: 1.6;">
+        <li><b>Comando di Standby:</b> Premendo di nuovo il tasto POWER, viene inviato il codice per lo spegnimento logico.</li>
+        <li><b>Disattivazione componenti:</b> Il processore spegne lo schermo e l'audio, ma mantiene attivo il circuito di ricezione IR.</li>
+        <li><b>Consumo minimo:</b> La TV resta in ascolto per poter ripartire subito alla prossima pressione del tasto rosso.</li>
+    </ol>
+</div>
 """,
     "ignorato": """
-### Comando ignorato
-
-La TV è in standby. In questo stato il sensore infrarosso riconosce **solo il tasto POWER**.
-Gli altri comandi (volume, canale, muto) vengono ricevuti ma scartati, perché
-non c'è nessuna immagine o audio da modificare.
-
-**Premi POWER per accenderla.**
+<div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05)); border-left: 5px solid #f59e0b; padding: 15px; border-radius: 8px;">
+    <h3 style="color: #f59e0b; margin-top: 0;">⚠️ Comando Ignorato (TV in Standby)</h3>
+    <p style="margin-bottom: 0; line-height: 1.6;">
+        La TV è spenta (in standby). In questo stato il sensore riconosce <b>unicamente il tasto rosso POWER</b>. 
+        Tutti gli altri tasti (volume, canali) vengono scartati perché non c'è alcun flusso audio/video da regolare. 
+        <br><br><b>Premi il grande tasto rosso POWER per accenderla!</b>
+    </p>
+</div>
 """,
     "volume": """
-### Regolazione del volume
-
-Il telecomando invia il codice "volume su" o "volume giù". Il processore
-cambia il livello dell'amplificatore audio e mostra la barra sullo schermo.
+<div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05)); border-left: 5px solid #3b82f6; padding: 15px; border-radius: 8px;">
+    <h3 style="color: #3b82f6; margin-top: 0;">🔊 Regolazione del Volume</h3>
+    <p style="margin-bottom: 0; line-height: 1.6;">
+        Il telecomando invia il codice audio. Il processore della TV modifica istantaneamente il guadagno dell'amplificatore e mostra la barra grafica OSD (On-Screen Display) sullo schermo.
+    </p>
+</div>
 """,
     "muto": """
-### Muto
-
-Il tasto MUTE invia un codice che dice al processore di azzerare l'uscita audio
-senza cambiare il livello del volume. Premendolo di nuovo, l'audio torna
-al volume di prima.
+<div style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(147, 51, 234, 0.05)); border-left: 5px solid #a855f7; padding: 15px; border-radius: 8px;">
+    <h3 style="color: #a855f7; margin-top: 0;">🔇 Funzione Muto</h3>
+    <p style="margin-bottom: 0; line-height: 1.6;">
+        Il tasto MUTE azzera temporaneamente l'uscita audio senza alterare il livello numerico del volume impostato. Premendolo di nuovo, l'audio viene ripristinato esattamente dov'era.
+    </p>
+</div>
 """,
     "canale": """
-### Cambio canale
-
-Il telecomando invia il codice "canale successivo", "precedente" o il numero
-scelto. Il sintonizzatore cambia flusso video e l'immagine sullo schermo si aggiorna.
+<div style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(219, 39, 119, 0.05)); border-left: 5px solid #ec4899; padding: 15px; border-radius: 8px;">
+    <h3 style="color: #ec4899; margin-top: 0;">📺 Cambio Canale</h3>
+    <p style="margin-bottom: 0; line-height: 1.6;">
+        Il sintonizzatore interno cambia il flusso dei dati video ricevuti, aggiornando istantaneamente grafica, colori e titolo del programma sullo schermo della TV.
+    </p>
+</div>
 """,
     "inizio": """
-### Come usarlo
-
-Premi i tasti del telecomando. Qui sotto compariranno le spiegazioni di
-ciò che succede dentro la TV a ogni pressione.
-
-**Prova a premere il tasto rosso POWER.**
+<div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(79, 70, 229, 0.05)); border-left: 5px solid #6366f1; padding: 15px; border-radius: 8px;">
+    <h3 style="color: #6366f1; margin-top: 0;">👋 Benvenuto! Come iniziare</h3>
+    <p style="margin-bottom: 0; line-height: 1.6;">
+        Questo simulatore interattivo ti mostra cosa succede nei circuiti di una TV. 
+        <br>👉 <b>Inizia subito premendo il grande TASTO ROSSO POWER</b> in alto sul telecomando per accendere la televisione!
+    </p>
+</div>
 """,
 }
 
 # ----------------------------------------------------------------------------
-# Grafica: TV e Rimozione elementi di default Gradio
+# Grafica avanzata e Responsive (CSS)
 # ----------------------------------------------------------------------------
 
 CSS_LAYOUT = """
-/* Nasconde il footer predefinito di Gradio e gli elementi di sistema */
 footer { display: none !important; }
-#gradio-app { background-color: transparent !important; }
-.gradio-container { max-width: 900px !important; margin: 0 auto !important; }
-.meta-text { display: none !important; }
+#gradio-app { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important; min-height: 100vh; }
+.gradio-container { max-width: 1050px !important; margin: 0 auto !important; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; }
 
-/* Intestazione personalizzata */
+/* Header moderno ed elegante */
 .custom-header {
     text-align: center;
-    margin-bottom: 25px;
+    padding: 25px 20px;
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    margin-bottom: 20px;
 }
 .custom-header h1 {
     font-size: 2.2rem;
     font-weight: 800;
+    color: #f8fafc;
     margin-bottom: 8px;
+    letter-spacing: -0.5px;
 }
 .custom-header h2 {
-    font-size: 1.6rem;
-    color: #ef4444;
-    font-weight: 700;
-    margin-top: 5px;
+    font-size: 1.3rem;
+    color: #38bdf8;
+    font-weight: 600;
+    margin-top: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-/* Stili TV */
-.tv-wrap { display:flex; flex-direction:column; align-items:center; font-family: Georgia, serif; }
-.tv-body { background:#1c1917; border-radius:18px; padding:18px 18px 10px; width:100%; max-width:520px;
-           box-shadow:0 12px 30px rgba(0,0,0,.35); }
-.tv-screen { position:relative; height:290px; border-radius:6px; overflow:hidden;
-             display:flex; align-items:center; justify-content:center; }
-.tv-off { background:#0a0a0a; box-shadow: inset 0 0 40px rgba(255,255,255,.04); }
-.tv-title { color:#fff; font-size:2.2rem; font-weight:bold; text-shadow:0 2px 12px rgba(0,0,0,.5); text-align:center; }
-.tv-sub { color:rgba(255,255,255,.85); font-size:1rem; margin-top:6px; text-align:center; }
-.tv-osd { position:absolute; left:16px; right:16px; bottom:14px; color:#fff; font-size:.9rem;
-          display:flex; align-items:center; gap:10px; background:rgba(0,0,0,.45); padding:6px 10px; border-radius:6px; }
-.tv-bar { flex:1; height:8px; background:rgba(255,255,255,.25); border-radius:4px; overflow:hidden; }
-.tv-bar > span { display:block; height:100%; background:#fff; }
-.tv-ch { position:absolute; top:12px; right:16px; color:#fff; font-size:1.1rem; background:rgba(0,0,0,.4);
-         padding:2px 10px; border-radius:4px; }
-.tv-footer { display:flex; align-items:center; justify-content:space-between; padding:10px 6px 2px; color:#a8a29e; font-size:.8rem; }
-.led { display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:8px; vertical-align:middle; }
-.led-red { background:#ef4444; box-shadow:0 0 8px #ef4444; }
-.led-green { background:#22c55e; box-shadow:0 0 8px #22c55e; }
-.tv-stand { width:120px; height:14px; background:#292524; border-radius:0 0 10px 10px; }
-.tv-state { margin-top:12px; font-size:1rem; }
+/* Stili TV Responsive */
+.tv-wrap { display: flex; flex-direction: column; align-items: center; width: 100%; }
+.tv-body { background: #09090b; border-radius: 20px; padding: 20px 20px 12px; width: 100%; max-width: 540px;
+           box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1); border: 2px solid #27272a; }
+.tv-screen { position: relative; height: 310px; border-radius: 10px; overflow: hidden;
+             display: flex; align-items: center; justify-content: center; }
+.tv-off { background: radial-gradient(circle, #18181b 0%, #09090b 100%); box-shadow: inset 0 0 50px rgba(0,0,0,0.9); }
+.tv-title { color: #fff; font-size: 2.4rem; font-weight: 800; text-shadow: 0 4px 15px rgba(0,0,0,0.7); text-align: center; }
+.tv-sub { color: rgba(255,255,255,0.9); font-size: 1.1rem; margin-top: 6px; text-align: center; font-weight: 500; }
+.tv-osd { position: absolute; left: 16px; right: 16px; bottom: 14px; color: #fff; font-size: 0.95rem;
+          display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.65); backdrop-filter: blur(5px); padding: 8px 14px; border-radius: 8px; }
+.tv-bar { flex: 1; height: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; overflow: hidden; }
+.tv-bar > span { display: block; height: 100%; background: #38bdf8; border-radius: 5px; }
+.tv-ch { position: absolute; top: 14px; right: 16px; color: #fff; font-size: 1.1rem; font-weight: 700; background: rgba(0,0,0,0.5);
+         padding: 4px 12px; border-radius: 6px; backdrop-filter: blur(4px); }
+.tv-footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 8px 4px; color: #a1a1aa; font-size: 0.85rem; font-weight: 600; }
+.led { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+.led-red { background: #ef4444; box-shadow: 0 0 10px #ef4444, 0 0 20px #ef4444; }
+.led-green { background: #22c55e; box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e; }
+.tv-stand { width: 140px; height: 12px; background: linear-gradient(to bottom, #3f3f46, #27272a); border-radius: 0 0 8px 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+.tv-state { margin-top: 15px; font-size: 1.05rem; color: #e2e8f0; text-align: center; background: rgba(30, 41, 59, 0.5); padding: 8px 16px; border-radius: 8px; width: 100%; max-width: 540px; }
+
+/* Telecomando moderno con focus speciale sul tasto rosso */
+#telecomando {
+  width: 100% !important; max-width: 250px !important; margin: 0 auto;
+  background: linear-gradient(165deg, #334155 0%, #1e293b 50%, #0f172a 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important; 
+  border-radius: 40px !important;
+  padding: 20px 16px 24px !important; gap: 14px !important; align-items: center !important;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.2) !important;
+}
+#telecomando .rem-row { justify-content: center !important; gap: 10px !important; flex-wrap: nowrap !important;
+  background: transparent !important; border: none !important; padding: 0 !important; box-shadow: none !important; }
+#telecomando .gap, #telecomando .form { background: transparent !important; border: none !important; }
+
+/* Finestrella infrarossa */
+.ir-window { width: 100px; height: 18px; margin: 0 auto; border-radius: 10px;
+  background: linear-gradient(#09090b, #18181b); border: 1px solid rgba(0,0,0,0.8);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.9);
+  display: flex; align-items: center; justify-content: center; }
+.ir-led { width: 64px; height: 6px; border-radius: 3px; background: #3f1010; }
+.ir-a { animation: ir-flash-a .4s ease-out; }
+.ir-b { animation: ir-flash-b .4s ease-out; }
+@keyframes ir-flash-a { 0%{background:#ef4444; box-shadow:0 0 16px 6px #ef4444;} 100%{background:#3f1010; box-shadow:none;} }
+@keyframes ir-flash-b { 0%{background:#ef4444; box-shadow:0 0 16px 6px #ef4444;} 100%{background:#3f1010; box-shadow:none;} }
+
+/* Tasti generali */
+#telecomando button { font-family: inherit !important; padding: 0 !important; }
+.rem-btn { background: linear-gradient(#475569, #334155) !important; color: #f1f5f9 !important;
+  border: 1px solid rgba(255,255,255,0.1) !important; font-weight: 600 !important;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15) !important; transition: all 0.1s ease; }
+.rem-btn:active { transform: translateY(2px); box-shadow: 0 1px 2px rgba(0,0,0,0.3) !important; }
+
+/* --- IL TASTO ROSSO POWER EVIDENZIATO --- */
+.power-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(239, 68, 68, 0.08);
+  border: 2px dashed rgba(239, 68, 68, 0.4);
+  padding: 10px;
+  border-radius: 20px;
+  width: 100%;
+}
+.power-label {
+  color: #fca5a5;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+.rem-power { 
+  width: 66px !important; height: 66px !important; min-width: 66px !important; flex: none !important;
+  border-radius: 50% !important; font-size: 1.8rem !important;
+  background: radial-gradient(circle at 35% 30%, #f87171, #dc2626 70%, #991b1b 100%) !important; 
+  color: #fff !important;
+  border: 2px solid #fca5a5 !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.6), 0 6px 12px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.4) !important;
+  animation: pulse-power 2s infinite;
+}
+@keyframes pulse-power {
+  0% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.5), 0 6px 12px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.4); }
+  50% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.9), 0 6px 12px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.4); }
+  100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.5), 0 6px 12px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.4); }
+}
+
+.rem-num { width: 42px !important; height: 42px !important; min-width: 42px !important; flex: none !important;
+  border-radius: 50% !important; font-size: 1rem !important; }
+.rem-mute { width: 116px !important; height: 34px !important; min-width: 116px !important; flex: none !important;
+  border-radius: 17px !important; font-size: 0.8rem !important; letter-spacing: 0.5px; }
+
+/* Tasti a bilanciere */
+#telecomando .rocker { width: 76px !important; min-width: 76px !important; max-width: 76px !important; flex: none !important;
+  background: linear-gradient(#1e293b, #0f172a) !important; border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 38px !important; padding: 6px 0 !important; gap: 0 !important; align-items: center !important;
+  box-shadow: inset 0 4px 8px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.2) !important; }
+.rem-key { width: 58px !important; height: 52px !important; min-width: 58px !important; flex: none !important;
+  border-radius: 26px !important; font-size: 1.6rem !important; line-height: 1 !important; }
+.rlabel { text-align: center; color: #94a3b8; font-family: inherit; font-size: 0.75rem;
+  font-weight: 700; padding: 0 !important; min-height: 0 !important; margin: 4px 0; letter-spacing: 0.5px; }
+.rem-brand { text-align: center; color: #64748b; font-family: inherit; font-size: 0.7rem;
+  padding: 0 !important; min-height: 0 !important; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
 """
 
 
@@ -146,89 +238,33 @@ def disegna_tv(stato):
     if stato["acceso"]:
         nome, c1, c2 = CANALI[stato["canale"]]
         if stato["muto"]:
-            osd = '<div class="tv-osd">Audio disattivato (muto)</div>'
+            osd = '<div class="tv-osd">🔇 Audio disattivato (Muto)</div>'
         else:
             osd = (
-                '<div class="tv-osd">Vol <div class="tv-bar"><span style="width:%d%%"></span></div> %d</div>'
+                '<div class="tv-osd">🔊 Vol <div class="tv-bar"><span style="width:%d%%"></span></div> %d</div>'
                 % (stato["volume"] * 5, stato["volume"])
             )
         schermo = (
             '<div class="tv-screen" style="background:linear-gradient(135deg,%s,%s)">'
             '<div><div class="tv-title">%s</div><div class="tv-sub">Canale %d</div></div>'
-            '<div class="tv-ch">%d</div>%s</div>'
+            '<div class="tv-ch">CH %d</div>%s</div>'
         ) % (c1, c2, nome, stato["canale"] + 1, stato["canale"] + 1, osd)
         led = '<span class="led led-green"></span>Acceso'
-        testo = "La TV è <b>accesa</b>."
+        testo = "La TV è <b>accesa</b> e pronta all'uso."
     else:
         schermo = '<div class="tv-screen tv-off"></div>'
         led = '<span class="led led-red"></span>Standby'
-        testo = "La TV è in <b>standby</b>: lo schermo è nero, ma il LED rosso è ancora acceso."
+        testo = "La TV è in <b>standby</b> (premi il tasto rosso POWER sul telecomando per accenderla)."
 
     return (
         "<style>" + CSS_LAYOUT + "</style>"
         '<div class="tv-wrap"><div class="tv-body">'
         + schermo
-        + '<div class="tv-footer"><span>' + led + "</span><span>Sensore IR</span></div>"
+        + '<div class="tv-footer"><span>' + led + "</span><span>Sensore IR 📡</span></div>"
         "</div>"
         '<div class="tv-stand"></div>'
         '<div class="tv-state">' + testo + "</div></div>"
     )
-
-
-# ----------------------------------------------------------------------------
-# Grafica: telecomando
-# ----------------------------------------------------------------------------
-
-CSS_REMOTE = """
-#telecomando {
-  width:230px !important; max-width:230px !important; min-width:230px !important; flex:none !important;
-  background:linear-gradient(165deg,#47474a 0%,#232325 45%,#151517 100%) !important;
-  border:1px solid #0b0b0c !important; border-radius:38px 38px 46px 46px !important;
-  padding:16px 14px 20px !important; gap:14px !important; align-items:center !important;
-  box-shadow:0 18px 34px rgba(0,0,0,.5), inset 0 2px 2px rgba(255,255,255,.14), inset 0 -4px 8px rgba(0,0,0,.5) !important;
-}
-#telecomando .rem-row { justify-content:center !important; gap:10px !important; flex-wrap:nowrap !important;
-  background:transparent !important; border:none !important; padding:0 !important; box-shadow:none !important; }
-#telecomando .gap, #telecomando .form { background:transparent !important; border:none !important; }
-
-/* finestrella infrarossa */
-.ir-window { width:96px; height:16px; margin:0 auto; border-radius:10px;
-  background:linear-gradient(#2a0707,#120202); border:1px solid #000;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.12);
-  display:flex; align-items:center; justify-content:center; }
-.ir-led { width:60px; height:5px; border-radius:3px; background:#5b1010; }
-.ir-a { animation: ir-flash-a .5s ease-out; }
-.ir-b { animation: ir-flash-b .5s ease-out; }
-@keyframes ir-flash-a { 0%{background:#ff2a2a; box-shadow:0 0 14px 5px #ff2a2a;} 100%{background:#5b1010; box-shadow:none;} }
-@keyframes ir-flash-b { 0%{background:#ff2a2a; box-shadow:0 0 14px 5px #ff2a2a;} 100%{background:#5b1010; box-shadow:none;} }
-
-/* tasti */
-#telecomando button { font-family: Helvetica, Arial, sans-serif !important; padding:0 !important; }
-.rem-btn { background:linear-gradient(#515154,#2e2e30) !important; color:#ececec !important;
-  border:1px solid #0b0b0c !important; font-weight:600 !important;
-  box-shadow:0 3px 0 #0b0b0c, 0 6px 8px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.18) !important; }
-.rem-btn:active { transform:translateY(2px); box-shadow:0 1px 0 #0b0b0c, inset 0 1px 0 rgba(255,255,255,.1) !important; }
-
-.rem-power { width:58px !important; height:58px !important; min-width:58px !important; flex:none !important;
-  border-radius:50% !important; font-size:1.5rem !important;
-  background:radial-gradient(circle at 35% 28%,#ff7a6e,#c1121f 70%) !important; color:#fff !important; }
-.rem-num { width:40px !important; height:40px !important; min-width:40px !important; flex:none !important;
-  border-radius:50% !important; font-size:1rem !important; }
-.rem-mute { width:110px !important; height:32px !important; min-width:110px !important; flex:none !important;
-  border-radius:18px !important; font-size:.8rem !important; }
-
-/* tasti a bilanciere (volume / canale) */
-#telecomando .rocker { width:74px !important; min-width:74px !important; max-width:74px !important; flex:none !important;
-  background:linear-gradient(#1b1b1d,#2c2c2f) !important; border:1px solid #000 !important;
-  border-radius:38px !important; padding:6px 0 !important; gap:0 !important; align-items:center !important;
-  box-shadow:inset 0 3px 8px rgba(0,0,0,.75), 0 1px 0 rgba(255,255,255,.1) !important; }
-.rem-key { width:56px !important; height:54px !important; min-width:56px !important; flex:none !important;
-  border-radius:28px !important; font-size:1.7rem !important; line-height:1 !important; }
-.rlabel { text-align:center; color:#c9c9cc; font-family:Helvetica,Arial,sans-serif; font-size:.78rem;
-  font-weight:700; padding:0 !important; min-height:0 !important; margin:4px 0; }
-.rem-brand { text-align:center; color:#8b8b90; font-family:Helvetica,Arial,sans-serif; font-size:.72rem;
-  padding:0 !important; min-height:0 !important; }
-"""
 
 
 def disegna_ir(n):
@@ -272,12 +308,12 @@ def premi(tasto, stato):
 # Interfaccia Gradio
 # ----------------------------------------------------------------------------
 
-TEMA = gr.themes.Soft(primary_hue="red", neutral_hue="stone")
+TEMA = gr.themes.Soft(primary_hue="red", neutral_hue="slate")
 
 with gr.Blocks(title="Impara ad usare il telecomando della TV", theme=TEMA) as demo:
     gr.HTML("<style>" + CSS_LAYOUT + CSS_REMOTE + "</style>")
     
-    # Intestazione Personalizzata
+    # Intestazione grafica personalizzata
     gr.HTML("""
         <div class="custom-header">
             <h1>Impara ad usare il telecomando della TV e come accenderlo</h1>
@@ -291,11 +327,14 @@ with gr.Blocks(title="Impara ad usare il telecomando della TV", theme=TEMA) as d
         with gr.Column(scale=3):
             tv = gr.HTML(disegna_tv(STATO_INIZIALE))
 
-        with gr.Column(scale=0, min_width=240):
+        with gr.Column(scale=0, min_width=260):
             with gr.Column(elem_id="telecomando"):
                 ir = gr.HTML(disegna_ir(0))
 
+                # --- TASTO POWER IN EVIDENZA SPECIALE ---
+                gr.HTML('<div class="power-container"><div class="power-label">Tasto Principale</div>')
                 b_power = gr.Button("⏻", elem_classes=["rem-btn", "rem-power"])
+                gr.HTML('</div>')
 
                 with gr.Row(elem_classes=["rem-row"]):
                     b_n = [gr.Button(str(i), elem_classes=["rem-btn", "rem-num"]) for i in (1, 2, 3, 4)]
@@ -303,16 +342,16 @@ with gr.Blocks(title="Impara ad usare il telecomando della TV", theme=TEMA) as d
                 b_mute = gr.Button("MUTE", elem_classes=["rem-btn", "rem-mute"])
 
                 with gr.Row(elem_classes=["rem-row"]):
-                    with gr.Column(elem_classes=["rocker"], min_width=74):
+                    with gr.Column(elem_classes=["rocker"], min_width=76):
                         b_vol_su = gr.Button("+", elem_classes=["rem-btn", "rem-key"])
                         gr.HTML("<div class='rlabel'>VOL</div>")
                         b_vol_giu = gr.Button("−", elem_classes=["rem-btn", "rem-key"])
-                    with gr.Column(elem_classes=["rocker"], min_width=74):
+                    with gr.Column(elem_classes=["rocker"], min_width=76):
                         b_ch_su = gr.Button("▲", elem_classes=["rem-btn", "rem-key"])
                         gr.HTML("<div class='rlabel'>CH</div>")
                         b_ch_giu = gr.Button("▼", elem_classes=["rem-btn", "rem-key"])
 
-                gr.HTML("<div class='rem-brand'>Telecomando TV</div>")
+                gr.HTML("<div class='rem-brand'>Smart Remote</div>")
 
     spiegazione = gr.Markdown(SPIEGAZIONI["inizio"])
 
