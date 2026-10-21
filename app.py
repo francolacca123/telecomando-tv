@@ -315,14 +315,12 @@ def rispondi_ia(messaggio, cronologia):
     if not client:
         return "⚠️ Chiave API di Google Gemini non configurata. Aggiungi GEMINI_API_KEY nelle variabili d'ambiente."
     try:
-        # Prompt di sistema per istruire Gemini a rispondere in modo semplice, ideale per anziani
         prompt_sistema = (
             "Sei un assistente digitale molto gentile, paziente e chiaro. "
             "Stai aiutando una persona anziana o poco esperta a capire come usare la televisione e il telecomando. "
             "Usa un linguaggio semplicissimo, rassicurante, amichevole e usa frasi brevi."
         )
         
-        # Converte la cronologia nel formato supportato o usa direttamente models.generate_content
         risposta = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=f"{prompt_sistema}\n\nUtente: {messaggio}"
@@ -388,8 +386,7 @@ with gr.Blocks(title="Impara ad usare il telecomando della TV") as demo:
         fn=rispondi_ia,
         chatbot=gr.Chatbot(height=240, label="Assistente Virtuale"),
         textbox=gr.Textbox(placeholder="Scrivi qui la tua domanda (es. Come si accende la TV?)...", container=False, scale=7),
-        submit_btn="Invia",
-        theme="soft"
+        submit_btn="Invia"
     )
 
     # --- FIRMA SOTTO TUTTO ---
