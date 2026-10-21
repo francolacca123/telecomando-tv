@@ -1,13 +1,20 @@
 """
-TV e telecomando virtuali con Gradio.
+TV e telecomando virtuali con Gradio e Google Gemini.
 Fatto Da Francesco Lauriola
 
-Installazione:  pip install gradio
+Installazione:  pip install gradio google-genai
 Avvio:          python app.py
 """
 
 import os
 import gradio as gr
+from google import genai
+
+# Inizializzazione del client Google GenAI (legge la chiave dalla variabile d'ambiente GEMINI_API_KEY)
+try:
+    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+except Exception:
+    client = None
 
 # ----------------------------------------------------------------------------
 # Dati del programma
@@ -92,7 +99,7 @@ SPIEGAZIONI = {
 }
 
 # ----------------------------------------------------------------------------
-# Grafica avanzata e Responsive (CSS Layout TV)
+# Grafica avanzata e Responsive (CSS)
 # ----------------------------------------------------------------------------
 
 CSS_LAYOUT = """
@@ -100,7 +107,6 @@ footer { display: none !important; }
 #gradio-app { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important; min-height: 100vh; }
 .gradio-container { max-width: 1050px !important; margin: 0 auto !important; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; }
 
-/* Header moderno ed elegante (solo titolo) */
 .custom-header {
     text-align: center;
     padding: 25px 20px;
@@ -119,7 +125,6 @@ footer { display: none !important; }
     letter-spacing: -0.5px;
 }
 
-/* Footer in basso sotto tutto */
 .custom-footer {
     text-align: center;
     padding: 20px;
@@ -136,7 +141,6 @@ footer { display: none !important; }
     letter-spacing: 0.5px;
 }
 
-/* Stili TV Responsive */
 .tv-wrap { display: flex; flex-direction: column; align-items: center; width: 100%; }
 .tv-body { background: #09090b; border-radius: 20px; padding: 20px 20px 12px; width: 100%; max-width: 540px;
            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1); border: 2px solid #27272a; }
@@ -159,10 +163,6 @@ footer { display: none !important; }
 .tv-state { margin-top: 15px; font-size: 1.05rem; color: #e2e8f0; text-align: center; background: rgba(30, 41, 59, 0.5); padding: 8px 16px; border-radius: 8px; width: 100%; max-width: 540px; }
 """
 
-# ----------------------------------------------------------------------------
-# Grafica Telecomando (CSS_REMOTE)
-# ----------------------------------------------------------------------------
-
 CSS_REMOTE = """
 #telecomando {
   width: 100% !important; max-width: 250px !important; margin: 0 auto;
@@ -176,7 +176,6 @@ CSS_REMOTE = """
   background: transparent !important; border: none !important; padding: 0 !important; box-shadow: none !important; }
 #telecomando .gap, #telecomando .form { background: transparent !important; border: none !important; }
 
-/* Finestrella infrarossa */
 .ir-window { width: 100px; height: 18px; margin: 0 auto; border-radius: 10px;
   background: linear-gradient(#09090b, #18181b); border: 1px solid rgba(0,0,0,0.8);
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.9);
@@ -187,14 +186,12 @@ CSS_REMOTE = """
 @keyframes ir-flash-a { 0%{background:#ef4444; box-shadow:0 0 16px 6px #ef4444;} 100%{background:#3f1010; box-shadow:none;} }
 @keyframes ir-flash-b { 0%{background:#ef4444; box-shadow:0 0 16px 6px #ef4444;} 100%{background:#3f1010; box-shadow:none;} }
 
-/* Tasti generali */
 #telecomando button { font-family: inherit !important; padding: 0 !important; }
 .rem-btn { background: linear-gradient(#475569, #334155) !important; color: #f1f5f9 !important;
   border: 1px solid rgba(255,255,255,0.1) !important; font-weight: 600 !important;
   box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15) !important; transition: all 0.1s ease; }
 .rem-btn:active { transform: translateY(2px); box-shadow: 0 1px 2px rgba(0,0,0,0.3) !important; }
 
-/* --- IL TASTO ROSSO POWER EVIDENZIATO --- */
 .power-container {
   display: flex;
   flex-direction: column;
@@ -234,7 +231,6 @@ CSS_REMOTE = """
 .rem-mute { width: 116px !important; height: 34px !important; min-width: 116px !important; flex: none !important;
   border-radius: 17px !important; font-size: 0.8rem !important; letter-spacing: 0.5px; }
 
-/* Tasti a bilanciere */
 #telecomando .rocker { width: 76px !important; min-width: 76px !important; max-width: 76px !important; flex: none !important;
   background: linear-gradient(#1e293b, #0f172a) !important; border: 1px solid rgba(255,255,255,0.1) !important;
   border-radius: 38px !important; padding: 6px 0 !important; gap: 0 !important; align-items: center !important;
@@ -286,10 +282,6 @@ def disegna_ir(n):
     return '<div class="ir-window"><div class="ir-led %s"></div></div>' % classe
 
 
-# ----------------------------------------------------------------------------
-# Logica dei comandi
-# ----------------------------------------------------------------------------
-
 def premi(tasto, stato):
     stato = dict(stato)
     stato["n"] += 1
@@ -311,11 +303,33 @@ def premi(tasto, stato):
         delta = 1 if tasto == "ch+" else -1
         stato["canale"] = (stato["canale"] + delta) % len(CANALI)
         chiave = "canale"
-    else:  # tasti numerici "1".."4"
+    else:
         stato["canale"] = int(tasto) - 1
         chiave = "canale"
 
     return stato, disegna_tv(stato), SPIEGAZIONI[chiave], disegna_ir(stato["n"])
+
+
+# Funzione di risposta dell'assistente IA con Google Gemini
+def rispondi_ia(messaggio, cronologia):
+    if not client:
+        return "⚠️ Chiave API di Google Gemini non configurata. Aggiungi GEMINI_API_KEY nelle variabili d'ambiente."
+    try:
+        # Prompt di sistema per istruire Gemini a rispondere in modo semplice, ideale per anziani
+        prompt_sistema = (
+            "Sei un assistente digitale molto gentile, paziente e chiaro. "
+            "Stai aiutando una persona anziana o poco esperta a capire come usare la televisione e il telecomando. "
+            "Usa un linguaggio semplicissimo, rassicurante, amichevole e usa frasi brevi."
+        )
+        
+        # Converte la cronologia nel formato supportato o usa direttamente models.generate_content
+        risposta = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=f"{prompt_sistema}\n\nUtente: {messaggio}"
+        )
+        return risposta.text
+    except Exception as e:
+        return f"Si è verificato un errore nel contattare l'intelligenza artificiale: {str(e)}"
 
 
 # ----------------------------------------------------------------------------
@@ -327,7 +341,6 @@ TEMA = gr.themes.Soft(primary_hue="red", neutral_hue="slate")
 with gr.Blocks(title="Impara ad usare il telecomando della TV") as demo:
     gr.HTML("<style>" + CSS_LAYOUT + CSS_REMOTE + "</style>")
     
-    # Intestazione grafica in alto
     gr.HTML("""
         <div class="custom-header">
             <h1>Impara ad usare il telecomando della TV , Guida facile per anziani</h1>
@@ -344,7 +357,6 @@ with gr.Blocks(title="Impara ad usare il telecomando della TV") as demo:
             with gr.Column(elem_id="telecomando"):
                 ir = gr.HTML(disegna_ir(0))
 
-                # --- TASTO POWER IN EVIDENZA SPECIALE ---
                 gr.HTML('<div class="power-container"><div class="power-label">Tasto Principale</div>')
                 b_power = gr.Button("⏻", elem_classes=["rem-btn", "rem-power"])
                 gr.HTML('</div>')
@@ -367,6 +379,18 @@ with gr.Blocks(title="Impara ad usare il telecomando della TV") as demo:
                 gr.HTML("<div class='rem-brand'>Smart Remote</div>")
 
     spiegazione = gr.Markdown(SPIEGAZIONI["inizio"])
+
+    # --- SEZIONE CHAT CON GOOGLE GEMINI ---
+    gr.Markdown("--- \n### 🤖 Chiedi aiuto all'Assistente IA")
+    gr.Markdown("Hai dubbi su come funziona la TV o il telecomando? Scrivi qui sotto una domanda e fatti aiutare dall'intelligenza artificiale:")
+    
+    chat_ia = gr.ChatInterface(
+        fn=rispondi_ia,
+        chatbot=gr.Chatbot(height=240, label="Assistente Virtuale"),
+        textbox=gr.Textbox(placeholder="Scrivi qui la tua domanda (es. Come si accende la TV?)...", container=False, scale=7),
+        submit_btn="Invia",
+        theme="soft"
+    )
 
     # --- FIRMA SOTTO TUTTO ---
     gr.HTML("""
