@@ -100,7 +100,7 @@ footer { display: none !important; }
 #gradio-app { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important; min-height: 100vh; }
 .gradio-container { max-width: 1050px !important; margin: 0 auto !important; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; }
 
-/* Header moderno ed elegante */
+/* Header moderno ed elegante (solo titolo) */
 .custom-header {
     text-align: center;
     padding: 25px 20px;
@@ -115,16 +115,25 @@ footer { display: none !important; }
     font-size: 2.2rem;
     font-weight: 800;
     color: #f8fafc;
-    margin-bottom: 8px;
+    margin: 0;
     letter-spacing: -0.5px;
 }
-.custom-header h2 {
-    font-size: 1.3rem;
+
+/* Footer in basso sotto tutto */
+.custom-footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    background: rgba(15, 23, 42, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+}
+.custom-footer h2 {
+    font-size: 1.5rem;
     color: #38bdf8;
-    font-weight: 600;
-    margin-top: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.5px;
 }
 
 /* Stili TV Responsive */
@@ -310,7 +319,7 @@ def premi(tasto, stato):
 
 
 # ----------------------------------------------------------------------------
-# Interfaccia Gradio (Compatibile con Gradio 6.0+)
+# Interfaccia Gradio
 # ----------------------------------------------------------------------------
 
 TEMA = gr.themes.Soft(primary_hue="red", neutral_hue="slate")
@@ -318,11 +327,10 @@ TEMA = gr.themes.Soft(primary_hue="red", neutral_hue="slate")
 with gr.Blocks(title="Impara ad usare il telecomando della TV") as demo:
     gr.HTML("<style>" + CSS_LAYOUT + CSS_REMOTE + "</style>")
     
-    # Intestazione grafica personalizzata
+    # Intestazione grafica in alto
     gr.HTML("""
         <div class="custom-header">
-            <h1>Impara ad usare il telecomando della TV e come accenderlo</h1>
-            <h2>Fatto Da Francesco Lauriola</h2>
+            <h1>Impara ad usare il telecomando della TV , Guida facile per anziani</h1>
         </div>
     """)
 
@@ -359,6 +367,13 @@ with gr.Blocks(title="Impara ad usare il telecomando della TV") as demo:
                 gr.HTML("<div class='rem-brand'>Smart Remote</div>")
 
     spiegazione = gr.Markdown(SPIEGAZIONI["inizio"])
+
+    # --- FIRMA SOTTO TUTTO ---
+    gr.HTML("""
+        <div class="custom-footer">
+            <h2>Fatto Da Francesco Lauriola</h2>
+        </div>
+    """)
 
     uscite = [stato, tv, spiegazione, ir]
 
