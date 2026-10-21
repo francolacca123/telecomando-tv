@@ -310,20 +310,22 @@ def premi(tasto, stato):
     return stato, disegna_tv(stato), SPIEGAZIONI[chiave], disegna_ir(stato["n"])
 
 
-# Funzione di risposta dell'assistente IA con Google Gemini
+# Funzione IA aggiornata a Gemini 3.5 con restrizioni sui temi e lunghezza massima
 def rispondi_ia(messaggio, cronologia):
     if not client:
         return "⚠️ Chiave API di Google Gemini non configurata. Aggiungi GEMINI_API_KEY nelle variabili d'ambiente."
     try:
         prompt_sistema = (
-            "Sei un assistente digitale molto gentile, paziente e chiaro. "
-            "Stai aiutando una persona anziana o poco esperta a capire come usare la televisione e il telecomando. "
-            "Usa un linguaggio semplicissimo, rassicurante, amichevole e usa frasi brevi."
+            "Sei un assistente digitale gentile, paziente e chiaro. "
+            "Stai aiutando una persona anziana a capire come usare la televisione e il telecomando. "
+            "REGOLA FONDAMENTALE 1: Rispondi ESCLUSIVAMENTE a domande che riguardano la televisione, il telecomando, l'accensione, il volume, i canali o lo standby. "
+            "Se l'utente chiede qualsiasi altra cosa non inerente alla TV o al telecomando, rispondi educatamente che puoi parlare solo di televisione e telecomandi. "
+            "REGOLA FONDAMENTALE 2: La risposta non deve MAI superare i 4 paragrafi (usa frasi brevi, semplici e rassicuranti)."
         )
         
         risposta = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=f"{prompt_sistema}\n\nUtente: {messaggio}"
+            model="gemini-3.5-flash",
+            contents=f"{prompt_sistema}\n\nDomanda dell'utente: {messaggio}"
         )
         return risposta.text
     except Exception as e:
@@ -378,14 +380,14 @@ with gr.Blocks(title="Impara ad usare il telecomando della TV") as demo:
 
     spiegazione = gr.Markdown(SPIEGAZIONI["inizio"])
 
-    # --- SEZIONE CHAT CON GOOGLE GEMINI ---
+    # --- SEZIONE CHAT CON GOOGLE GEMINI 3.5 ---
     gr.Markdown("--- \n### 🤖 Chiedi aiuto all'Assistente IA")
-    gr.Markdown("Hai dubbi su come funziona la TV o il telecomando? Scrivi qui sotto una domanda e fatti aiutare dall'intelligenza artificiale:")
+    gr.Markdown("Hai dubbi su come funziona la TV o il telecomando? Scrivi qui sotto la tua domanda:")
     
     chat_ia = gr.ChatInterface(
         fn=rispondi_ia,
         chatbot=gr.Chatbot(height=240, label="Assistente Virtuale"),
-        textbox=gr.Textbox(placeholder="Scrivi qui la tua domanda (es. Come si accende la TV?)...", container=False, scale=7),
+        textbox=gr.Textbox(placeholder="Scrivi qui (es. Come accendo la TV?)...", container=False, scale=7),
         submit_btn="Invia"
     )
 
