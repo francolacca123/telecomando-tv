@@ -343,7 +343,7 @@ with gr.Blocks(title="Impara ad usare il telecomando della TV") as demo:
     
     gr.HTML("""
         <div class="custom-header">
-            <h1>Impara ad usare il telecomando della TV , Guida facile per anziani</h1>
+            <h1>Impara ad usare il telecomando della TV , Guida facile</h1>
         </div>
     """)
 
